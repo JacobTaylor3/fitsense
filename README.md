@@ -14,27 +14,6 @@ FitSense is a smart wardrobe-assistant web app that helps you choose outfits bas
 
 ---
 
-## 🧱 Project Structure
-
-fitsense/
-│
-├─ .vscode/ # VSCode settings
-├─ Images/ # Static image assets
-├─ static/uploads/ # Uploaded wardrobe item images
-├─ templates/ # HTML templates for the web UI
-├─ app.py / app2.py # Web app entry point(s)
-├─ main.py # Main script for orchestration
-├─ core_outfits.py # Outfit generation logic
-├─ wardrobe_tools.py # Wardrobe item tools
-├─ weather_tools.py # Weather data tools
-├─ gemini_client.py # Weather or API client
-├─ db.py # Database and persistence logic
-├─ pyproject.toml # Project metadata
-├─ requirements.txt # Dependencies list
-└─ README.md # This file
-
-
----
 
 ## 🛠️ How to Run Locally
 
@@ -85,3 +64,4 @@ Tips:
     Modify outfit logic in core_outfits.py to fine-tune recommendations.
 
     For production deployment, use a WSGI server like Gunicorn and set environment variables securely.
+
