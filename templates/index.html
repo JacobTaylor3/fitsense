@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Wardrobe Studio · Capture & Style</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg: #020817;
+      --card: #050816;
+      --accent: #38bdf8;
+      --accent-soft: rgba(56,189,248,0.14);
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --danger: #fb7185;
+      --radius-xl: 18px;
+      --font: system-ui, -apple-system, BlinkMacSystemFont, -system-ui, sans-serif;
+      --border-subtle: 1px solid rgba(148,163,253,0.16);
+      --shadow-soft: 0 18px 50px rgba(15,23,42,0.7);
+      --shadow-soft-sm: 0 10px 26px rgba(15,23,42,0.6);
+      --transition-fast: 0.18s ease;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--font);
+      color: var(--text);
+      background:
+        radial-gradient(circle at top, rgba(56,189,248,0.06), transparent),
+        radial-gradient(circle at bottom, rgba(79,70,229,0.05), transparent),
+        var(--bg);
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .layout {
+      width: 100%;
+      max-width: 1120px;
+      display: grid;
+      grid-template-columns: 1.5fr 1.5fr 1.4fr;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    @media (max-width: 980px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius-xl);
+      border: var(--border-subtle);
+      box-shadow: var(--shadow-soft);
+      padding: 14px 14px 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card h2 {
+      margin: 0 0 4px;
+      font-size: 0.98rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 14px var(--accent);
+    }
+
+    .subtitle {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(56,189,248,0.45);
+      font-size: 0.6rem;
+      color: var(--accent);
+      background-color: rgba(4,7,20,0.96);
+      box-shadow: var(--shadow-soft-sm);
+      margin-bottom: 6px;
+    }
+
+    .tag span {
+      width: 6px;
+      height: 6px;
+      background: var(--accent);
+      border-radius: 999px;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 7px 9px;
+      border-radius: 10px;
+      border: none;
+      font-size: 0.7rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: linear-gradient(to right, var(--accent), #6366f1);
+      color: #020817;
+      box-shadow: var(--shadow-soft-sm);
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast), opacity var(--transition-fast);
+    }
+
+    button.secondary {
+      background: transparent;
+      border: 1px solid rgba(148,163,253,0.35);
+      color: var(--text);
+      box-shadow: none;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-soft);
+    }
+
+    button:active {
+      transform: translateY(1px) scale(0.97);
+      box-shadow: var(--shadow-soft-sm);
+      opacity: 0.94;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 7px 8px;
+      border-radius: 9px;
+      border: 1px solid rgba(75,85,99,0.9);
+      background-color: #020817;
+      color: var(--text);
+      font-size: 0.7rem;
+      outline: none;
+      margin-top: 3px;
+      transition: border var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast), transform var(--transition-fast);
+    }
+
+    input::placeholder {
+      color: #6b7280;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(56,189,248,0.18);
+      background-color: #020817;
+      transform: translateY(-1px);
+    }
+
+    .field-label {
+      font-size: 0.64rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .hint {
+      font-size: 0.6rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .error {
+      font-size: 0.62rem;
+      color: var(--danger);
+      margin-top: 4px;
+    }
+
+    .ok {
+      font-size: 0.62rem;
+      color: var(--accent);
+      margin-top: 4px;
+    }
+
+    /* Camera + Preview */
+
+    .camera-wrap {
+      margin-top: 6px;
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 6px;
+      align-items: stretch;
+    }
+
+    @media (max-width: 600px) {
+      .camera-wrap {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    video, canvas, img.preview-img {
+      width: 100%;
+      border-radius: 12px;
+      background: #000;
+      border: 1px solid rgba(75,85,99,0.9);
+      object-fit: cover;
+      max-height: 220px;
+    }
+
+    img.preview-img {
+      background: #020817;
+    }
+
+    .meta-box {
+      margin-top: 4px;
+      padding: 5px 6px;
+      border-radius: 10px;
+      font-size: 0.62rem;
+      background-color: rgba(9,9,16,0.98);
+      border: 1px solid rgba(148,163,253,0.16);
+      max-height: 110px;
+      overflow-y: auto;
+      line-height: 1.5;
+    }
+
+    /* Outfit result */
+
+    .result-label {
+      font-size: 0.63rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .result-main {
+      font-size: 0.8rem;
+      color: var(--accent);
+      margin-top: 2px;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .result-sub {
+      font-size: 0.66rem;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    .outfit-grid {
+      margin-top: 5px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 5px;
+      font-size: 0.64rem;
+    }
+
+    .outfit-item {
+      padding: 5px 6px 4px;
+      border-radius: 9px;
+      background-color: #020817;
+      border: 1px solid rgba(148,163,253,0.18);
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .outfit-label {
+      font-size: 0.58rem;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+    }
+
+    .outfit-img {
+      width: 100%;
+      height: 90px;                 /* fixed height for uniform cards */
+      object-fit: contain;          /* show full item without cropping */
+      background: #020817;          /* subtle background behind image */
+      border-radius: 8px;
+      display: block;
+      border: 1px solid rgba(148,163,253,0.25);
+    }
+
+    .keep-card {
+      margin-top: 4px;
+      padding: 5px 6px;
+      border-radius: 10px;
+      background-color: var(--accent-soft);
+      font-size: 0.6rem;
+      color: var(--accent);
+      display: none;
+      gap: 5px;
+      align-items: flex-start;
+      border: 1px solid rgba(56,189,248,0.35);
+    }
+
+    .keep-pill {
+      padding: 2px 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(56,189,248,0.45);
+      flex-shrink: 0;
+      font-size: 0.58rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <!-- 1. Capture & Upload -->
+    <div class="card">
+      <h2><span class="dot"></span> Capture garment</h2>
+      <div class="subtitle">
+        Use your camera or upload a photo. We’ll store it and auto-tag with Gemini.
+      </div>
+      <div class="tag"><span></span> Step 1 · Build your digital wardrobe</div>
+
+      <div class="btn-row">
+        <button type="button" id="start-camera">Use camera</button>
+        <button type="button" id="capture-photo" class="secondary">Capture</button>
+        <label class="secondary" style="padding:7px 9px; cursor:pointer;">
+          Upload file
+          <input type="file" id="file-input" accept="image/*" style="display:none;">
+        </label>
+      </div>
+
+      <div class="camera-wrap">
+        <video id="camera-stream" playsinline></video>
+        <canvas id="capture-canvas" style="display:none;"></canvas>
+        <img id="preview-img" class="preview-img" alt="Preview" style="display:none;">
+      </div>
+
+      <div class="field-label">Occasion (optional hint for tagging)</div>
+      <select id="upload-occasion">
+        <option value="">Auto-detect</option>
+        <option value="casual">Casual</option>
+        <option value="business casual">Business casual</option>
+        <option value="formal">Formal</option>
+        <option value="party">Party</option>
+        <option value="gym">Gym</option>
+      </select>
+
+      <div class="btn-row">
+        <button type="button" id="save-garment">Save to wardrobe</button>
+      </div>
+
+      <div id="upload-status" class="hint">No garment saved yet.</div>
+      <div id="upload-error" class="error"></div>
+
+      <div id="upload-meta" class="meta-box" style="display:none;"></div>
+    </div>
+
+    <!-- 2. Wardrobe status -->
+    <div class="card">
+      <h2><span class="dot"></span> Latest saved item</h2>
+      <div class="subtitle">
+        Every capture goes into your <code>wardrobe</code> table with AI metadata.
+      </div>
+      <div class="tag"><span></span> Step 2 · Confirm what Gemini saw</div>
+
+      <div id="latest-info" class="hint">
+        Capture & save an item to see its metadata summary here.
+      </div>
+
+      <div id="latest-box" class="meta-box" style="display:none;"></div>
+    </div>
+
+    <!-- 3. Today’s Outfit Suggestion -->
+    <div class="card">
+      <h2><span class="dot"></span> Today’s Outfit</h2>
+      <div class="subtitle">
+        Use your stored wardrobe + live weather to get a styled combo.
+      </div>
+      <div class="tag"><span></span> Step 3 · Style from your own clothes</div>
+
+      <div class="field-label">Location (city)</div>
+      <input id="city-input" type="text" placeholder="e.g. Boston, MA" />
+
+      <div class="field-label">Occasion</div>
+      <select id="occasion-input">
+        <option value="">Everyday casual</option>
+        <option value="casual">Casual</option>
+        <option value="business casual">Business casual</option>
+        <option value="formal">Formal</option>
+        <option value="party">Party / Night out</option>
+        <option value="gym">Gym</option>
+      </select>
+
+      <div class="field-label">Style preference</div>
+      <select id="style-input">
+        <option value="">Modern minimalist</option>
+        <option value="streetwear">Streetwear</option>
+        <option value="smart casual">Smart casual</option>
+        <option value="classic">Classic</option>
+        <option value="bold">Bold / statement</option>
+      </select>
+
+      <div class="btn-row">
+        <button type="button" id="get-outfit">Get my outfit</button>
+      </div>
+
+      <div id="suggest-error" class="error"></div>
+      <div id="suggest-loading" class="hint" style="display:none;">Curating your look...</div>
+
+      <div class="result-label">Live recommendation</div>
+      <div class="result-main">
+        <div id="result-title">No city yet</div>
+        <div id="result-meta"></div>
+      </div>
+      <div id="result-sub" class="result-sub">
+        Add at least one garment, then request an outfit.
+      </div>
+
+      <div id="outfit-grid" class="outfit-grid" style="display:none;">
+        <div class="outfit-item">
+          <div class="outfit-label">Top</div>
+          <div id="top-val" class="outfit-value">—</div>
+        </div>
+        <div class="outfit-item">
+          <div class="outfit-label">Bottom</div>
+          <div id="bottom-val" class="outfit-value">—</div>
+        </div>
+        <div class="outfit-item">
+          <div class="outfit-label">Outerwear</div>
+          <div id="outerwear-val" class="outfit-value">—</div>
+        </div>
+        <div class="outfit-item">
+          <div class="outfit-label">Accessories</div>
+          <div id="accessories-val" class="outfit-value">—</div>
+        </div>
+      </div>
+
+      <div id="keep-card" class="keep-card">
+        <div class="keep-pill">Keep this with you</div>
+        <div id="keep-text"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==== Camera & Upload Logic ====
+    const startBtn = document.getElementById('start-camera');
+    const captureBtn = document.getElementById('capture-photo');
+    const fileInput = document.getElementById('file-input');
+    const saveBtn = document.getElementById('save-garment');
+
+    const video = document.getElementById('camera-stream');
+    const canvas = document.getElementById('capture-canvas');
+    const previewImg = document.getElementById('preview-img');
+
+    const uploadOccasion = document.getElementById('upload-occasion');
+    const uploadStatus = document.getElementById('upload-status');
+    const uploadError = document.getElementById('upload-error');
+    const uploadMeta = document.getElementById('upload-meta');
+
+    const latestInfo = document.getElementById('latest-info');
+    const latestBox = document.getElementById('latest-box');
+
+    let mediaStream = null;
+    let capturedBlob = null;
+
+    async function startCamera() {
+      uploadError.textContent = '';
+      try {
+        mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = mediaStream;
+        await video.play();
+        video.style.display = 'block';
+        previewImg.style.display = 'none';
+        canvas.style.display = 'none';
+        capturedBlob = null;
+        uploadStatus.textContent = 'Camera is live. Frame your garment and press Capture.';
+      } catch (err) {
+        uploadError.textContent = 'Unable to access camera. You can use file upload instead.';
+        console.error(err);
+      }
+    }
+
+    function capturePhoto() {
+      uploadError.textContent = '';
+      if (mediaStream && video.videoWidth > 0) {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0);
+        canvas.toBlob((blob) => {
+          if (!blob) {
+            uploadError.textContent = 'Failed to capture image.';
+            return;
+          }
+          capturedBlob = blob;
+          const url = URL.createObjectURL(blob);
+          previewImg.src = url;
+          previewImg.style.display = 'block';
+          canvas.style.display = 'none';
+          uploadStatus.textContent = 'Image captured. Click "Save to wardrobe" to upload.';
+        }, 'image/jpeg', 0.9);
+      } else {
+        uploadError.textContent = 'Camera not ready. Try starting camera or use file upload.';
+      }
+    }
+
+    function handleFileSelected(file) {
+      if (!file) return;
+      capturedBlob = file;
+      const url = URL.createObjectURL(file);
+      previewImg.src = url;
+      previewImg.style.display = 'block';
+      if (mediaStream) {
+        mediaStream.getTracks().forEach(t => t.stop());
+        mediaStream = null;
+      }
+      video.style.display = 'none';
+      uploadStatus.textContent = 'File selected. Click "Save to wardrobe" to upload.';
+    }
+
+    async function saveGarment() {
+      uploadError.textContent = '';
+      if (!capturedBlob) {
+        uploadError.textContent = 'Capture a photo or upload an image first.';
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('image', capturedBlob, 'garment.jpg');
+      if (uploadOccasion.value) {
+        formData.append('occasion_hint', uploadOccasion.value);
+      }
+
+      uploadStatus.textContent = 'Uploading & tagging with Gemini...';
+      uploadMeta.style.display = 'none';
+      uploadMeta.textContent = '';
+
+      try {
+        const res = await fetch('/api/upload-garment', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!res.ok) {
+          throw new Error('Upload failed: ' + res.status);
+        }
+
+        const data = await res.json();
+        uploadStatus.textContent = data.message || 'Saved successfully.';
+        uploadStatus.className = 'ok';
+
+        const meta = data.metadata || {};
+        const lines = [
+          `ID: ${data.garment_id ?? '—'}`,
+          meta.name ? `Name: ${meta.name}` : '',
+          meta.type ? `Type: ${meta.type}` : '',
+          meta.color ? `Color: ${meta.color}` : '',
+          meta.fabric ? `Fabric: ${meta.fabric}` : '',
+          meta.style ? `Style: ${meta.style}` : '',
+          meta.occasion ? `Occasion: ${meta.occasion}` : '',
+          data.image_url ? `Image: ${data.image_url}` : ''
+        ].filter(Boolean);
+
+        uploadMeta.textContent = lines.join('\n');
+        uploadMeta.style.display = 'block';
+
+        latestInfo.style.display = 'none';
+        latestBox.textContent = uploadMeta.textContent;
+        latestBox.style.display = 'block';
+      } catch (err) {
+        uploadError.textContent = 'Could not upload/tag garment. Check backend logs.';
+        console.error(err);
+      }
+    }
+
+    startBtn.addEventListener('click', startCamera);
+    captureBtn.addEventListener('click', capturePhoto);
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      handleFileSelected(file);
+    });
+    saveBtn.addEventListener('click', saveGarment);
+
+    // ==== Suggest Outfit Logic ====
+    const getOutfitBtn = document.getElementById('get-outfit');
+    const cityInput = document.getElementById('city-input');
+    const occasionInput = document.getElementById('occasion-input');
+    const styleInput = document.getElementById('style-input');
+
+    const suggestError = document.getElementById('suggest-error');
+    const suggestLoading = document.getElementById('suggest-loading');
+
+    const resultTitle = document.getElementById('result-title');
+    const resultMeta = document.getElementById('result-meta');
+    const resultSub = document.getElementById('result-sub');
+    const outfitGrid = document.getElementById('outfit-grid');
+    const topVal = document.getElementById('top-val');
+    const bottomVal = document.getElementById('bottom-val');
+    const outerwearVal = document.getElementById('outerwear-val');
+    const accessoriesVal = document.getElementById('accessories-val');
+    const keepCard = document.getElementById('keep-card');
+    const keepText = document.getElementById('keep-text');
+
+        function renderOutfitSlot(el, value) {
+      el.innerHTML = "";
+
+      if (!value || value === "—") {
+        el.textContent = "—";
+        return;
+      }
+
+      if (typeof value === "string" && value.trim().startsWith("/static/uploads/")) {
+        const img = document.createElement("img");
+        img.src = value.trim();
+        img.alt = "Selected item";
+        img.className = "outfit-img";
+        el.appendChild(img);
+      } else {
+        el.textContent = value;
+      }
+    }
+
+
+    async function getOutfit() {
+      suggestError.textContent = '';
+      keepCard.style.display = 'none';
+      const city = cityInput.value.trim();
+      if (!city) {
+        suggestError.textContent = 'Enter a city first.';
+        return;
+      }
+      suggestLoading.style.display = 'block';
+
+      try {
+        const payload = {
+          location: city,
+          occasion: occasionInput.value || null,
+          style_preference: styleInput.value || null
+        };
+
+        const res = await fetch('/api/suggest-outfit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        suggestLoading.style.display = 'none';
+
+        if (!res.ok) {
+          suggestError.textContent = data.message || 'Failed to get outfit.';
+          return;
+        }
+
+        const temp = data.temperature_f ?? null;
+        const season = data.season || '';
+        resultTitle.textContent = data.city || city;
+        resultMeta.textContent =
+          (temp !== null ? `${temp}°F` : '') +
+          (temp !== null && season ? ' · ' : '') +
+          (season || '');
+
+                const outfit = data.suggested_outfit || data.outfit || {};
+
+        renderOutfitSlot(topVal, outfit.top || "—");
+        renderOutfitSlot(bottomVal, outfit.bottom || "—");
+        renderOutfitSlot(outerwearVal, outfit.outerwear || "—");
+
+        const accessoriesValue = Array.isArray(outfit.accessories)
+          ? (outfit.accessories[0] || "—")
+          : (outfit.accessories || "—");
+        renderOutfitSlot(accessoriesVal, accessoriesValue);
+
+
+        outfitGrid.style.display = 'grid';
+
+        resultSub.textContent =
+          data.stylist_comment ||
+          'Here’s a look curated from your saved wardrobe for today’s conditions.';
+
+        const keep = data.keep_this_with_you;
+        if (keep && keep.trim() !== '') {
+          keepText.textContent = keep;
+          keepCard.style.display = 'flex';
+        }
+      } catch (err) {
+        suggestLoading.style.display = 'none';
+        suggestError.textContent = 'Something went wrong. Check your backend.';
+        console.error(err);
+      }
+    }
+
+    getOutfitBtn.addEventListener('click', getOutfit);
+  </script>
+</body>
+</html>
